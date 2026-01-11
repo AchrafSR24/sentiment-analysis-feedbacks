@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environments
+.env
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Docker
+*.tar
+
+# Data (si volumineux)
+data/raw/
+data/interim/
+
+# Streamlit
+.streamlit/
+
+# Models (OPTION 1: garder)
+# models/
+
+# Models (OPTION 2: ne pas pousser)
+# models/*.pkl

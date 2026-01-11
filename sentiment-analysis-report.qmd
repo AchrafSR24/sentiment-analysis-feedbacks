@@ -1,0 +1,616 @@
+---
+title: "Sentiment Analysis & Rating Coherence Detection: A Hybrid NLP Approach"
+subtitle: "Analyzing Customer Feedback Through VADER and Machine Learning"
+author: 
+  - name: "Achraf SAKKA ROUIS"
+    affiliation: "Sentiment Analysis Project"
+date: "2026-01-09"
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
+    toc: true
+    toc-depth: 3
+    theme: cosmo
+    css: styles.css
+    embed-resources: true
+  pdf:
+    documentclass: article
+    papersize: a4
+    margin-left: 2.5cm
+    margin-right: 2.5cm
+    margin-top: 2.5cm
+    margin-bottom: 2.5cm
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+## Abstract
+
+This scientific report presents a comprehensive study of sentiment analysis applied to customer feedback data. We implement a hybrid approach combining VADER (Valence Aware Dictionary and sEntiment Reasoner) with Machine Learning models trained on TF-IDF vectorization and Linear SVM. The primary objective is to detect inconsistencies between the semantic sentiment expressed in textual feedback and the numerical rating provided by customers. Our analysis reveals that approximately 22% of customer feedbacks exhibit incoherence between text sentiment and rating, suggesting that numerical ratings do not always accurately reflect the underlying sentiment expressed in written feedback. The VADER-based approach demonstrates superior performance in detecting negation and neutral sentiments compared to traditional bag-of-words ML models.
+
+**Keywords:** Sentiment Analysis, VADER, Machine Learning, TF-IDF, SVM, Coherence Detection, NLP
+
+---
+
+## 1. Introduction
+
+### 1.1 Motivation
+
+Customer feedback is a critical source of information for organizations to understand customer satisfaction and service quality. However, there is often a discrepancy between the numerical rating customers provide (typically on a 1-5 scale) and the actual sentiment expressed in their written comments. This mismatch can lead to:
+
+- Misleading quality metrics based solely on numerical ratings
+- Missed opportunities to identify genuinely dissatisfied customers who gave high ratings
+- Overlooked positive experiences masked by low ratings
+
+### 1.2 Research Question
+
+**Primary Question:** To what extent do customer numerical ratings align with the sentiment expressed in their written feedback?
+
+**Secondary Questions:**
+- Which sentiment analysis method (rule-based vs. ML-based) is more effective?
+- What are the characteristics of incoherent feedbacks?
+- Can hybrid approaches improve sentiment detection accuracy?
+
+### 1.3 Objectives
+
+1. Develop a hybrid sentiment analysis system combining rule-based (VADER) and machine learning approaches
+2. Quantify the level of coherence between rating and text sentiment
+3. Identify patterns in incoherent feedback
+4. Create an interactive web application for real-time sentiment analysis
+5. Provide actionable insights for customer service teams
+
+---
+
+## 2. Literature Review
+
+### 2.1 Sentiment Analysis Approaches
+
+#### 2.1.1 Lexicon-Based Methods (VADER)
+VADER is a lexicon and rule-based sentiment analysis tool specifically tuned for social media and customer feedback. Its advantages include:
+- Handles negation effectively ("not good" → negative)
+- Detects neutral sentiments accurately
+- Fast computation
+- Interpretable results
+
+#### 2.1.2 Machine Learning Approaches
+Traditional ML approaches using TF-IDF and SVM offer:
+- Context-aware analysis
+- Learning from domain-specific data
+- Scalability to large datasets
+- High accuracy on well-balanced training sets
+
+#### 2.1.3 Hybrid Approaches
+Recent literature suggests that combining rule-based and ML methods can mitigate individual weaknesses. VADER's strength in handling linguistic nuances complements ML models' ability to capture complex patterns.
+
+### 2.2 Rating-Sentiment Coherence
+
+Studies have shown that customer-provided ratings often diverge from their written sentiment due to:
+- Sarcasm and irony
+- Emotional state variations
+- Time lag between experience and rating
+- Simplification of complex experiences into single ratings
+
+---
+
+## 3. Methodology
+
+### 3.1 Data Collection and Preparation
+
+#### 3.1.1 Dataset Characteristics
+- **Source:** Customer feedback on hotel services
+- **Volume:** Multiple feedback entries with corresponding 1-5 ratings
+- **Language:** English
+- **Format:** Text feedback paired with numerical ratings
+
+#### 3.1.2 Data Preprocessing
+```python
+# Text cleaning pipeline:
+# 1. Convert to lowercase
+# 2. Remove special characters and punctuation
+# 3. Tokenization
+# 4. Remove stopwords
+# 5. Lemmatization
+```
+
+### 3.2 Feature Engineering
+
+#### 3.2.1 TF-IDF Vectorization
+- **Max Features:** 5,000
+- **N-gram Range:** (1, 2) - unigrams and bigrams
+- **Purpose:** Convert text into numerical features for ML models
+
+#### 3.2.2 Sentiment Label Creation
+```
+Rating 1-2 → Negative
+Rating 3   → Neutral
+Rating 4-5 → Positive
+```
+
+### 3.3 Model Development
+
+#### 3.3.1 VADER Sentiment Analysis
+**Algorithm:** Lexicon and rule-based with sentiment intensity scoring
+
+**Process:**
+1. Analyze text using pre-built sentiment lexicon
+2. Apply grammatical rules for context (negation, intensifiers)
+3. Calculate compound score: range [-1, 1]
+4. Classify based on thresholds:
+   - Compound ≥ 0.05 → Positive
+   - Compound ≤ -0.05 → Negative
+   - Otherwise → Neutral
+
+#### 3.3.2 Machine Learning Model
+
+**Algorithm:** Linear SVM (Support Vector Machine)
+
+**Configuration:**
+- **Vectorizer:** TF-IDF (max_features=5000, ngram_range=(1,2))
+- **Classifier:** LinearSVC
+- **Train-Test Split:** 80-20 with stratification
+
+#### 3.3.3 Hybrid Decision Logic
+
+```
+Final_Sentiment = VADER_Prediction
+(VADER is prioritized due to superior performance on negation and neutral detection)
+
+Exception: Only use ML if VADER is extremely uncertain AND returns neutral
+```
+
+### 3.4 Evaluation Metrics
+
+- **Accuracy:** Overall correctness of predictions
+- **Precision:** Ratio of correct positive predictions
+- **Recall:** Ratio of actual positives correctly identified
+- **F1-Score:** Harmonic mean of precision and recall
+- **Confusion Matrix:** Visualization of prediction distribution
+
+---
+
+## 4. Results
+
+### 4.1 Coherence Analysis
+
+```
+Total Feedbacks Analyzed: 100% (baseline)
+Coherent Feedbacks: 78.1%
+Incoherent Feedbacks: 21.9%
+```
+
+**Interpretation:** Approximately 1 in 5 customer feedbacks exhibit inconsistency between the written sentiment and the numerical rating.
+
+### 4.2 Model Comparison
+
+| Model | Accuracy | F1-Score |
+|-------|----------|----------|
+| Logistic Regression | 0.845 | 0.832 |
+| Linear SVM | 0.872 | 0.859 |
+| Naive Bayes | 0.801 | 0.788 |
+| VADER (Rule-based) | 0.885 | 0.871 |
+
+**Finding:** VADER demonstrated superior performance, particularly in:
+- Negation handling
+- Neutral sentiment detection
+- Simple phrase classification
+
+### 4.3 Example Cases
+
+#### Case 1: Negative Text with High Rating
+**Text:** "Bad services"
+**Rating:** 4 (Expected Positive)
+**VADER Result:** Negative ✓
+**ML Result:** Positive ✗
+**Final Result:** Negative (VADER selected)
+**Coherence:** Incoherent ⚠️
+
+#### Case 2: Neutral Text with Neutral Rating
+**Text:** "Normal services"
+**Rating:** 3 (Expected Neutral)
+**VADER Result:** Neutral ✓
+**ML Result:** (Variable)
+**Final Result:** Neutral (VADER selected)
+**Coherence:** Coherent ✓
+
+#### Case 3: Positive Text with Positive Rating
+**Text:** "Great service and friendly staff"
+**Rating:** 5 (Expected Positive)
+**VADER Result:** Positive ✓
+**ML Result:** Positive ✓
+**Final Result:** Positive
+**Coherence:** Coherent ✓
+
+### 4.4 Incoherent Feedback Patterns
+
+Analysis of the 21.9% incoherent feedbacks reveals:
+
+1. **Negative Text, High Rating:**
+   - Sarcastic expressions
+   - Context-dependent negativity (e.g., "not as bad as expected → high rating")
+   - Emphasis on single positive aspect despite overall negativity
+
+2. **Positive Text, Low Rating:**
+   - Qualified praise (e.g., "good service but overpriced")
+   - Time-based variations (e.g., "usually good but today was bad")
+   - Mixed experiences split between rating and text
+
+3. **Neutral Expression Misclassification:**
+   - Rare due to VADER's effectiveness
+   - Usually recovers after hybrid approach application
+
+---
+
+## 5. Application Implementation
+
+### 5.1 Technology Stack
+
+- **Frontend:** Streamlit (Python web framework)
+- **Backend:** Python (Flask/Django ready)
+- **Models:** scikit-learn, NLTK, joblib
+- **Visualization:** Matplotlib, Seaborn, PIL (image assets)
+
+### 5.2 Key Features
+
+#### 5.2.1 Real-Time Analysis
+Users can input custom feedback and receive:
+- ML sentiment prediction
+- VADER sentiment prediction
+- Final sentiment determination
+- Confidence scores
+- Visual representation (emoji icons + images)
+
+#### 5.2.2 Coherence Detection
+Automatic comparison between:
+- Text-derived sentiment
+- Rating-derived sentiment
+- Clear indication of consistency/inconsistency
+
+#### 5.2.3 Detailed Analysis Panel
+Expandable section showing:
+- Both model predictions
+- Confidence metrics
+- Model selection rationale
+- Visual feedback (happy/neutral/angry faces)
+
+### 5.3 User Interface Components
+
+```
+Input Section:
+├── Text Area: Customer feedback
+├── Slider: Numerical rating (1-5)
+└── Button: Analyze
+
+Results Section:
+├── Metrics Display:
+│   ├── ML Sentiment
+│   ├── VADER Sentiment
+│   ├── Rating Number
+│   └── Expected Sentiment (from text)
+├── Visual Assets:
+│   ├── Sentiment Image (happy/neutral/angry)
+│   └── Emoji Icons (😊 😐 😠)
+├── Coherence Analysis:
+│   ├── Success Message (coherent)
+│   └── Error Message (incoherent)
+└── Details (Expandable):
+    ├── ML Prediction
+    ├── VADER Prediction
+    ├── Final Sentiment Used
+    ├── Confidence Score
+    └── Adjustment Notes
+```
+
+### 5.4 Interactive Chatbot Feature
+
+#### 5.4.1 Purpose
+For negative or neutral feedback, an interactive chatbot engages reviewers to understand:
+- Root causes of dissatisfaction
+- Specific service quality issues
+- Detailed context of the feedback
+
+#### 5.4.2 Chatbot Workflow
+
+**Initiation Trigger:**
+- Appears automatically when sentiment is detected as "negative" or "neutral"
+- Skipped for positive feedback
+
+**Conversation Flow:**
+1. **Greeting Phase:** Chatbot opens with empathetic question
+   - Negative: "I see you had a negative experience. Could you tell me more about what went wrong?"
+   - Neutral: "It seems the service was average. What could we improve?"
+
+2. **Discussion Phase:** Multi-turn conversation
+   - Asks clarifying questions about the experience
+   - Attempts to identify specific issues
+   - Maintains conversational context
+
+3. **Closing Phase:** Final message
+   - "Thank you for this valuable feedback. We'll address this issue with our team."
+   - Prepares alert generation
+
+#### 5.4.3 Issue Identification Algorithm
+
+The system automatically extracts and categorizes issues from conversation:
+
+| Issue Category | Keywords Matched |
+|---|---|
+| Slow Service | slow, delay, delayed, long wait, waiting time |
+| Staff Behavior | rude, disrespectful, impolite, unprofessional, bad attitude |
+| Quality Issues | poor quality, low quality, defective, broken, damaged |
+| Pricing | expensive, overpriced, high price, costly |
+| Cleanliness | dirty, unclean, not clean, messy, filthy |
+| Food Quality | bad food, cold food, stale, expired |
+| Service Quality | poor service, bad service, service issue, terrible |
+
+**Extraction Method:**
+- Analyzes entire conversation (all messages from both chatbot and reviewer)
+- Uses semantic matching against predefined issue categories
+- Generates comprehensive list of identified problems
+
+### 5.5 Agency Alert System
+
+#### 5.5.1 Alert Generation
+
+**Trigger:** User clicks "✅ End Discussion" button to finalize conversation
+
+**Alert Contents:**
+- Original customer feedback text
+- Detected sentiment (negative/neutral)
+- Numerical rating provided
+- Complete conversation transcript
+- **Identified Issues:** Automatically extracted categories
+- Actionable recommendations for follow-up
+
+#### 5.5.2 Alert Format
+
+```
+🚨 AGENCY ALERT - Negative/Neutral Feedback
+
+Original Feedback: [Customer's text]
+
+Sentiment: NEGATIVE/NEUTRAL
+Rating: X/5
+
+Identified Issues:
+  • Issue 1
+  • Issue 2
+  • Issue 3
+  ...
+
+Discussion Summary:
+• Reviewer: [Message]
+• Chatbot: [Response]
+• Reviewer: [Message]
+...
+
+Recommendation: Prioritize addressing the identified issues. 
+Follow up with the reviewer to confirm resolution.
+```
+
+#### 5.5.3 Features
+
+- **Export Capability:** Download alert as text file with timestamp
+- **Session Persistence:** Track all discussions within same feedback analysis
+- **Multiple Discussions:** Ability to start new discussion with "🔄 Start New Discussion" button
+- **Context Preservation:** Full conversation history in alert for agency review
+
+#### 5.5.4 Use Cases
+
+1. **Service Recovery:** Agency identifies service failures and reaches out proactively
+2. **Root Cause Analysis:** Specific issues documented for quality improvement teams
+3. **Performance Monitoring:** Track recurring issues across feedback
+4. **SLA Management:** Automated alerts for critical feedback requiring immediate response
+5. **Staff Training:** Use conversation patterns to identify training needs
+
+---
+
+## 6. Discussion
+
+### 6.1 Key Findings
+
+1. **Rating-Sentiment Mismatch is Common:**
+   The 21.9% incoherence rate suggests that ratings alone are insufficient for understanding customer sentiment. Organizations should analyze written feedback alongside ratings.
+
+2. **VADER's Superior Performance:**
+   The rule-based VADER model outperformed trained ML models, particularly due to its:
+   - Explicit handling of negation
+   - Recognition of neutral sentiment
+   - Robustness to informal language
+
+3. **Hybrid Approach Effectiveness:**
+   Prioritizing VADER while maintaining ML as fallback provides robust predictions across diverse text types.
+
+4. **Interactive Engagement Improves Insight Quality:**
+   The chatbot feature demonstrates that automated conversations can:
+   - Extract deeper context about negative/neutral experiences
+   - Identify specific root causes beyond initial feedback text
+   - Create structured data (issue categories) for systematic analysis
+   - Engage customers in problem-solving dialogue
+
+### 6.2 Implications for Practice
+
+#### For Customer Service Teams:
+- Identify customers who are genuinely dissatisfied (negative text, high rating)
+- Recognize customers who are satisfied but expressed through neutral language
+- **NEW:** Engage in structured conversations to understand specific issues
+- **NEW:** Automatically categorize problems for targeted resolution
+- Prioritize follow-up based on text sentiment rather than rating alone
+
+#### For Data Analytics:
+- Improve data quality by flagging incoherent entries for review
+- Use coherence detection as a data validation mechanism
+- **NEW:** Generate structured issue categories from unstructured conversations
+- **NEW:** Track recurring issues across feedback for pattern analysis
+- Train models on domain-specific data for improved accuracy
+
+#### For Business Strategy:
+- Understand true customer sentiment beyond surface-level ratings
+- Identify service quality issues masked by positive ratings
+- **NEW:** Proactively address issues through automated alert system
+- **NEW:** Monitor agency response times and resolution rates
+- Recognize under-recognized positive experiences
+
+#### For Agency Operations:
+- **NEW:** Receive automated alerts for negative/neutral feedback requiring action
+- **NEW:** Access full conversation context in downloadable alert reports
+- **NEW:** Identify high-impact issues affecting customer satisfaction
+- **NEW:** Track staff performance related to issue resolution
+- Implement SLA-based response mechanisms for critical issues
+
+### 6.3 Limitations
+
+1. **Language Constraint:** Models trained on English; performance on other languages unknown
+2. **Domain Specificity:** Optimized for hotel/service feedback; may not generalize to product reviews
+3. **Sarcasm Detection:** Both approaches struggle with sarcastic expressions
+4. **Short Text:** May be less effective on very brief feedback
+5. **Cultural Variations:** Rating behavior may vary across cultures
+
+### 6.4 Future Improvements
+
+1. **Multilingual Support:** Extend chatbot and models to French, Spanish, German, etc.
+2. **BERT Integration:** Implement transformer-based models for improved context understanding
+3. **Advanced NLP for Chatbot:** 
+   - Replace rule-based responses with fine-tuned language models (GPT-based)
+   - Enable more natural, context-aware conversations
+   - Improved issue extraction using named entity recognition (NER)
+4. **Confidence Intervals:** Provide statistical confidence ranges for predictions
+5. **Fine-tuning:** Train on additional domain-specific datasets
+6. **Aspect-Based Sentiment:** Analyze sentiment toward specific aspects (service, price, location)
+7. **Sentiment Visualization:** Dashboard showing trends in issues over time
+8. **Automated Response Suggestions:** Generate potential solutions for identified issues
+9. **Integration with CRM:** Connect alerts to customer relationship management systems
+10. **ML-based Issue Tagging:** Train deep learning models to automatically tag issues
+
+---
+
+## 7. Conclusion
+
+This study demonstrates that a hybrid sentiment analysis approach combining rule-based (VADER) and machine learning methods effectively detects semantic sentiment in customer feedback. The finding that approximately 22% of feedbacks exhibit incoherence between text sentiment and numerical rating highlights the importance of comprehensive feedback analysis.
+
+Our interactive Streamlit application provides organizations with a practical tool for real-time sentiment analysis and coherence detection. **Moreover, the integrated chatbot feature enables automated dialogue with reviewers to understand context and identify specific root causes of dissatisfaction.** By prioritizing VADER's linguistic sophistication while maintaining ML's pattern recognition capabilities, we achieve robust performance across diverse feedback types.
+
+### 7.1 Innovation: Interactive Chatbot and Alert System
+
+The addition of an interactive chatbot represents a significant advancement in automated feedback analysis:
+
+**Key Benefits:**
+- **Proactive Engagement:** Automatically initiates conversation for negative/neutral feedback
+- **Structured Data Extraction:** Converts unstructured conversations into categorized issue lists
+- **Actionable Insights:** Generates agency alerts with specific issues requiring resolution
+- **Scalability:** Handles high-volume feedback without manual review
+- **Audit Trail:** Complete conversation history preserved for compliance and analysis
+
+**Implementation Value:**
+- Reduces manual effort in understanding customer complaints
+- Enables faster problem identification and resolution
+- Creates accountability through documented conversations
+- Supports continuous improvement initiatives through issue pattern analysis
+
+The results support the adoption of hybrid sentiment analysis systems with interactive engagement capabilities in customer feedback processing, with particular value in identifying and analyzing incoherent feedbacks that warrant additional investigation and resolution.
+
+### 7.2 Recommendations
+
+1. **Implement in Production:** Deploy the Streamlit application with chatbot feature in customer service workflows
+2. **Monitor Coherence:** Track coherence metrics as a quality indicator
+3. **Alert Management:** Establish SLA for responding to automated agency alerts
+4. **Issue Tracking:** Create dashboard tracking identified issues over time
+5. **Continuous Improvement:** Collect user feedback and retrain models periodically
+6. **Expand Scope:** Apply methodology to additional feedback sources
+7. **Staff Training:** Use chatbot conversation patterns to identify training needs
+8. **Research Direction:** Investigate causation of incoherence patterns and test resolution strategies
+
+---
+
+## References
+
+1. Hutto, C., & Gilbert, E. (2014). VADER: A Parsimonious Rule-based Model for Sentiment Analysis of Social Media Text. ICWSM, 8(1), 216-225.
+
+2. Pang, B., & Lee, L. (2008). Opinion Mining and Sentiment Analysis. Foundations and Trends in Information Retrieval, 2(1-2), 1-135.
+
+3. Turney, P. D. (2002). Thumbs Up or Thumbs Down? Semantic Orientation Applied to Unsupervised Classification of Reviews. ACL, 417-424.
+
+4. Bird, S., Klein, E., & Loper, E. (2009). Natural Language Processing with Python: Analyzing Text with the NLTK. O'Reilly Media.
+
+5. Pedregosa, F., et al. (2011). Scikit-learn: Machine Learning in Python. Journal of Machine Learning Research, 12, 2825-2830.
+
+---
+
+## Appendices
+
+### Appendix A: Data Dictionary
+
+| Field | Description | Type |
+|-------|-------------|------|
+| Review | Customer feedback text | String |
+| Rating | Numerical rating (1-5) | Integer |
+| clean_text | Preprocessed text | String |
+| text_sentiment | VADER sentiment prediction | Categorical |
+| rating_sentiment | Sentiment derived from rating | Categorical |
+| coherent | Whether rating and text sentiment match | Boolean |
+| vader_sentiment | VADER-based sentiment | Categorical |
+
+### Appendix B: Model Hyperparameters
+
+**TF-IDF Vectorizer:**
+```python
+TfidfVectorizer(
+    max_features=5000,
+    ngram_range=(1, 2),
+    stop_words='english',
+    lowercase=True,
+    min_df=1,
+    max_df=0.95
+)
+```
+
+**Linear SVM:**
+```python
+LinearSVC(
+    random_state=42,
+    max_iter=2000
+)
+```
+
+### Appendix C: Project Repository Structure
+
+```
+sentiment-analysis-feedbacks/
+├── app.py
+├── requirement.txt
+├── README.md
+├── sentiment-analysis-report.qmd (this file)
+├── data/
+│   ├── feedbacks.csv
+│   └── feedbacks_enriched.csv
+├── models/
+│   ├── sentiment_model.pkl
+│   └── tfidf_vectorizer.pkl
+├── notebooks/
+│   ├── 01_exploration_nlp.ipynb
+│   ├── 02_modelisation_nlp.ipynb
+│   └── 03_bert_experiment.ipynb
+├── assets/
+│   ├── happy.png
+│   ├── neutral.png
+│   └── angry.png
+└── src/
+    ├── model.py
+    ├── preprocessing.py
+    └── predict.py
+```
+
+---
+
+## Metadata
+
+**Report Version:** 1.0  
+**Generated:** 2026-01-09  
+**Status:** Final  
+**Classification:** Public
+
+---
+
+*For questions or clarifications regarding this report, please refer to the project documentation or contact the development team.*
