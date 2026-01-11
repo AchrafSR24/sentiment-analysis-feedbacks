@@ -276,7 +276,7 @@ Pillow                 # Image processing
 
 Install all with:
 ```bash
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
 ---
@@ -361,7 +361,7 @@ The app automatically downloads required NLTK data:
 ---
 
 ## 👤 Author
-Developed as a sentiment analysis and NLP project
+Achraf SAKKA ROUIS
 
 ## 📄 License
 Open source project
