@@ -33,3 +33,19 @@ data/interim/
 
 # Models (OPTION 2: ne pas pousser)
 # models/*.pkl
+
+# Models (trained artifacts)
+models/*.pkl
+
+# Data
+data/*.csv
+data/*.parquet
+
+# Notebooks outputs
+*.ipynb_checkpoints
+
+# Docker cache / large files
+*.tar
+
+# BERT training artifacts
+notebooks/bert_results/
