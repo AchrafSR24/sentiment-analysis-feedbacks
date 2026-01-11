@@ -61,7 +61,7 @@ cd sentiment-analysis-feedbacks
 
 2. **Install dependencies**
 ```bash
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
 3. **Run the Streamlit app**
